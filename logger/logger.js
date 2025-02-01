@@ -3,6 +3,7 @@ import path from 'node:path';
 import levels from './levels.js';
 import formatMessage from './formatter.js';
 import getErrorInfo from './getErrorInfo.js';
+import { ENV_LOCAL } from '../env.js';
 
 class Logger {
   constructor(logPath = 'logs/app.log') {
@@ -28,7 +29,7 @@ class Logger {
 
     const formattedMsg = formatMessage(level, message);
 
-    if (process.env.APP_ENV === 'local') {
+    if (process.env.APP_ENV === ENV_LOCAL) {
       console.log(formattedMsg);
     } else {
       fs.appendFile(this.logPath, `${formattedMsg} \n`, (err) => {
