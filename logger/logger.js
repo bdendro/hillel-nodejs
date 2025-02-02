@@ -4,6 +4,8 @@ import levels from './levels.js';
 import formatMessage from './formatter.js';
 import getErrorInfo from './getErrorInfo.js';
 import { ENV_LOCAL } from '../env.js';
+import { EventEmitter } from 'node:events';
+import { EVENT_LOG, EVENT_LOG_AS } from '../events.js';
 
 class Logger {
   constructor(logPath = 'logs/app.log') {
@@ -12,9 +14,32 @@ class Logger {
     if (!fs.existsSync(path.dirname(this.logPath))) {
       fs.mkdirSync(path.dirname(this.logPath), { recursive: true });
     }
+
+    this.__emmiter = new EventEmitter();
+    this.__emmiter.on(EVENT_LOG, (...args) => {
+      this.__writeMsg(...args);
+    });
+
+    this.__emmiter.on(EVENT_LOG_AS, (...args) => {
+      setImmediate(() => {
+        this.__writeMsg(...args);
+      });
+    });
   }
 
-  __log(level, msg) {
+  __writeMsg(msg) {
+    if (process.env.APP_ENV === ENV_LOCAL) {
+      console.log(msg);
+    } else {
+      fs.appendFile(this.logPath, `${msg} \n`, (err) => {
+        if (err) {
+          console.error('Error while try to put data into file', err.message);
+        }
+      });
+    }
+  }
+
+  __log(level, msg, async) {
     let message;
 
     if (msg instanceof Error) {
@@ -29,27 +54,23 @@ class Logger {
 
     const formattedMsg = formatMessage(level, message);
 
-    if (process.env.APP_ENV === ENV_LOCAL) {
-      console.log(formattedMsg);
+    if (async) {
+      this.__emmiter.emit(EVENT_LOG_AS, formattedMsg);
     } else {
-      fs.appendFile(this.logPath, `${formattedMsg} \n`, (err) => {
-        if (err) {
-          console.error('Error while try to put data into file', err.message);
-        }
-      });
+      this.__emmiter.emit(EVENT_LOG, formattedMsg);
     }
   }
 
-  info(msg) {
-    this.__log(levels.INFO, msg);
+  info(msg, async = true) {
+    this.__log(levels.INFO, msg, async);
   }
 
-  warning(msg) {
-    this.__log(levels.WARNING, msg);
+  warning(msg, async = true) {
+    this.__log(levels.WARNING, msg, async);
   }
 
-  error(msg) {
-    this.__log(levels.ERROR, msg);
+  error(msg, async = true) {
+    this.__log(levels.ERROR, msg, async);
   }
 }
 
