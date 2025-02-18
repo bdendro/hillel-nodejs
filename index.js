@@ -1,4 +1,4 @@
-import Logger from './logger/logger.js';
+import Logger from './logger/Logger.js';
 
 const logger = new Logger();
 
