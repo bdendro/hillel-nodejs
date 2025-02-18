@@ -1,3 +1,7 @@
-[34m[2025-01-27T13:16:25.713Z], INFO: Info message[39m 
-[33m[2025-01-27T13:16:25.715Z], WARNING: Warning message[39m 
-[31m[2025-01-27T13:16:25.715Z], ERROR: Error message[39m 
+[34m[2025-02-18T11:22:43.724Z] INFO: Info message 2[39m
+[33m[2025-02-18T11:22:43.726Z] WARNING: Warning message 2[39m
+[31m[2025-02-18T11:22:43.726Z] ERROR: Error message 2[39m
+[34m[2025-02-18T11:22:43.727Z] INFO: Info message 1[39m
+[33m[2025-02-18T11:22:43.727Z] WARNING: Warning message 1[39m
+[31m[2025-02-18T11:22:43.727Z] ERROR: Error message 1[39m
+[31m[2025-02-18T11:22:43.727Z] ERROR: Error, error message, hillel-nodejs/index.js:11:13[39m
