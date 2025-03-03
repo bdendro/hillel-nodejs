@@ -2,13 +2,14 @@ import fs from 'node:fs';
 import path from 'node:path';
 import levels from './levels.js';
 import getErrorInfo from './getErrorInfo.js';
-import { ENV_LOCAL } from '../env.js';
+import { ENV_LOCAL } from '../../constants/env.js';
 import { EventEmitter } from 'node:events';
-import { EVENT_LOG, EVENT_LOG_AS } from '../events.js';
+import { EVENT_LOG, EVENT_LOG_AS } from '../../constants/events.js';
 import LogTransform from './LogTransform.js';
+import { rootDir } from '../../../config.js';
 
 class Logger {
-  constructor(logPath = 'logs/app.log') {
+  constructor(logPath = path.join(rootDir, 'logs', 'app.log')) {
     this.logPath = path.normalize(logPath);
     this.__emitter = new EventEmitter();
     this.__logTransform = new LogTransform();

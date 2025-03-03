@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import levels from './levels.js';
 import { Transform } from 'node:stream';
-import { ENV_LOCAL } from '../env.js';
+import { ENV_LOCAL } from '../../constants/env.js';
 
 class LogTransform extends Transform {
   constructor() {

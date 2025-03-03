@@ -1,11 +1,21 @@
 import express from 'express';
-import Logger from './logger/Logger.js';
-import router from './routes/router.js';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import Logger from './src/utils/logger/Logger.js';
+import router from './src/routes/router.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const logger = new Logger();
 const app = express();
 
 app.use(express.json());
+
+app.use(express.static(path.join(__dirname, 'public')));
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'src', 'views'));
+
 app.use('/', router);
 
 app.use((req, res, next) => {
