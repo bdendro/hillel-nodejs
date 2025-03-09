@@ -6,6 +6,7 @@ import router from './src/routes/router.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+process.rootDir = __dirname;
 
 const logger = new Logger();
 const app = express();
@@ -28,5 +29,8 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(process.env.APP_PORT || 3000, () => {
-  logger.info(`Express server is listening on port ${process.env.APP_PORT}`);
+  logger.info(
+    `Express server is listening on port ${process.env.APP_PORT}`,
+    false
+  );
 });

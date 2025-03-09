@@ -6,10 +6,9 @@ import { ENV_LOCAL } from '../../constants/env.js';
 import { EventEmitter } from 'node:events';
 import { EVENT_LOG, EVENT_LOG_AS } from '../../constants/events.js';
 import LogTransform from './LogTransform.js';
-import { rootDir } from '../../../config.js';
 
 class Logger {
-  constructor(logPath = path.join(rootDir, 'logs', 'app.log')) {
+  constructor(logPath = path.join(process.rootDir, 'logs', 'app.log')) {
     this.logPath = path.normalize(logPath);
     this.__emitter = new EventEmitter();
     this.__logTransform = new LogTransform();

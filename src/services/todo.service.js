@@ -1,40 +1,51 @@
 const todos = [];
 let i = 1; // autoincrement
 
-const findById = (id) => {
-  return todos.find((todo) => todo.id === parseInt(id));
+const findById = (userId, id) => {
+  return todos.find(
+    (todo) => todo.userId === userId && todo.id === parseInt(id)
+  );
 };
 
-const findIndexById = (id) => {
-  return todos.findIndex((todo) => todo.id === parseInt(id));
+const findIndexById = (userId, id) => {
+  return todos.findIndex(
+    (todo) => todo.userId === userId && todo.id === parseInt(id)
+  );
 };
 
-export const isTodoExists = (id) => {
-  return !!findById(id);
+export const getTodos = (userId) => {
+  return todos.filter((todo) => todo.userId === userId);
 };
 
-export const getTodos = () => {
-  return todos;
+export const getTodo = (userId, id) => {
+  const todo = findById(userId, id);
+  if (!todo) {
+    return null;
+  }
+  return todo;
 };
 
-export const getTodo = (id) => {
-  return findById(id);
-};
-
-export const postTodo = (todo) => {
-  todos.push({ id: i, ...todo });
+export const postTodo = (userId, todo) => {
+  todos.push({ id: i, userId, ...todo });
   i++;
-  return findById(i - 1);
+  return findById(userId, i - 1);
 };
 
-export const putTodo = (id, todo) => {
-  const todoIndex = findIndexById(id);
-  todos[todoIndex] = { id: parseInt(id), ...todo };
-  return findById(id);
+export const putTodo = (userId, id, todo) => {
+  const todoIndex = findIndexById(userId, id);
+  if (todoIndex === -1) {
+    return null;
+  }
+  todos[todoIndex] = { id: parseInt(id), userId, ...todo };
+  return findById(userId, id);
 };
 
-export const deleteTodo = (id) => {
+export const deleteTodo = (userId, id) => {
   // temporary placeholder until the db connection is established
-  const todoIndex = findIndexById(id);
+  const todoIndex = findIndexById(userId, id);
+  if (todoIndex === -1) {
+    return null;
+  }
   todos.splice(todoIndex, 1);
+  return true;
 };

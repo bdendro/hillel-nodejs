@@ -2,15 +2,25 @@ import Joi from 'joi';
 
 const idScema = Joi.number().integer().positive();
 
-export const idValidator = (req, res, next) => {
-  const { todoId } = req.params;
-  const { error } = idScema.validate(todoId);
+export const idValidator =
+  (idNames = []) =>
+  (req, res, next) => {
+    const errors = [];
 
-  if (error) {
-    return res.status(400).json({
-      error: error.message,
-      details: error.details.map((detail) => detail.message),
+    idNames.forEach((idName) => {
+      if (req.params[idName]) {
+        const { error } = idScema.validate(req.params[idName]);
+        if (error) {
+          errors.push(`${idName}: ${error.message}`);
+        }
+      }
     });
-  }
-  next();
-};
+
+    if (errors.length) {
+      return res.status(400).json({
+        errors: errors,
+      });
+    }
+
+    next();
+  };
