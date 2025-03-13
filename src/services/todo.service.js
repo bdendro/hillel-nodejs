@@ -1,51 +1,42 @@
-const todos = [];
-let i = 1; // autoincrement
+import Todo from '../models/todo.model.js';
 
-const findById = (userId, id) => {
-  return todos.find(
-    (todo) => todo.userId === userId && todo.id === parseInt(id)
-  );
+export const getTodos = async (userId) => {
+  return await Todo.findAll({
+    where: { userId: parseInt(userId) },
+    order: [['id', 'ASC']],
+  });
 };
 
-const findIndexById = (userId, id) => {
-  return todos.findIndex(
-    (todo) => todo.userId === userId && todo.id === parseInt(id)
-  );
-};
-
-export const getTodos = (userId) => {
-  return todos.filter((todo) => todo.userId === userId);
-};
-
-export const getTodo = (userId, id) => {
-  const todo = findById(userId, id);
-  if (!todo) {
+export const getTodo = async (userId, id) => {
+  const todo = await Todo.findByPk(parseInt(id));
+  if (parseInt(userId) !== todo?.userId) {
     return null;
   }
   return todo;
 };
 
-export const postTodo = (userId, todo) => {
-  todos.push({ id: i, userId, ...todo });
-  i++;
-  return findById(userId, i - 1);
+export const postTodo = async (userId, todo) => {
+  const newTodo = await Todo.create({ userId: parseInt(userId), ...todo });
+  return newTodo;
 };
 
-export const putTodo = (userId, id, todo) => {
-  const todoIndex = findIndexById(userId, id);
-  if (todoIndex === -1) {
+export const putTodo = async (userId, id, todo) => {
+  const [affectedRows, updatedTodos] = await Todo.update(
+    { ...todo },
+    { where: { id: parseInt(id), userId: parseInt(userId) }, returning: true }
+  );
+  if (!affectedRows) {
     return null;
   }
-  todos[todoIndex] = { id: parseInt(id), userId, ...todo };
-  return findById(userId, id);
+  return updatedTodos[0];
 };
 
-export const deleteTodo = (userId, id) => {
-  // temporary placeholder until the db connection is established
-  const todoIndex = findIndexById(userId, id);
-  if (todoIndex === -1) {
-    return null;
+export const deleteTodo = async (userId, id) => {
+  const res = await Todo.destroy({
+    where: { id: parseInt(id), userId: parseInt(userId) },
+  });
+  if (!res) {
+    return false;
   }
-  todos.splice(todoIndex, 1);
   return true;
 };

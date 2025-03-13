@@ -1,15 +1,5 @@
 import crypto from 'node:crypto';
-
-const users = [];
-let i = 1; // autoincrement
-
-const findById = (id) => {
-  return users.find((user) => user.id === parseInt(id));
-};
-
-const findIndexById = (id) => {
-  return users.findIndex((user) => user.id === parseInt(id));
-};
+import User from '../models/user.model.js';
 
 const getHashedPassword = (password) => {
   return crypto.createHash('md5').update(password).digest().toString('hex');
@@ -22,48 +12,42 @@ export const verifyUser = (user, password) => {
   return getHashedPassword(password) === user.password;
 };
 
-export const getUsers = () => {
+export const getUsers = async () => {
+  const users = await User.findAll({ order: [['id', 'ASC']] });
   return users;
 };
 
-export const getUser = (id) => {
-  const user = findById(id);
-  if (!user) {
-    return null;
-  }
+export const getUser = async (id) => {
+  const user = await User.findByPk(parseInt(id));
   return user;
 };
 
-export const getUserByEmail = (email) => {
-  return users.find((user) => user.email === email);
+export const getUserByEmail = async (email) => {
+  return await User.findOne({ where: { email } });
 };
 
-export const postUser = (user) => {
-  const userByEmail = getUserByEmail(user.email);
-  if (userByEmail) {
-    return null;
-  }
+export const postUser = async (user) => {
   user.password = getHashedPassword(user.password);
-  users.push({ id: i, ...user });
-  i++;
-  return findById(i - 1);
+  const newUser = await User.create(user);
+  return newUser;
 };
 
-export const putUser = (id, user) => {
-  const userIndex = findIndexById(id);
-  if (userIndex === -1) {
-    return null;
-  }
+export const putUser = async (id, user) => {
   user.password = getHashedPassword(user.password);
-  users[userIndex] = { id: parseInt(id), ...user };
-  return users[userIndex];
-};
-
-export const deleteUser = (id) => {
-  const userIndex = findIndexById(id);
-  if (userIndex === -1) {
+  const [affectedRows, updatedUsers] = await User.update(user, {
+    where: { id: parseInt(id) },
+    returning: true,
+  });
+  if (!affectedRows) {
     return null;
   }
-  users.splice(userIndex, 1);
+  return updatedUsers[0];
+};
+
+export const deleteUser = async (id) => {
+  const res = await User.destroy({ where: { id: parseInt(id) } });
+  if (!res) {
+    return true;
+  }
   return true;
 };

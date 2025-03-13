@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import levels from './levels.js';
 import getErrorInfo from './getErrorInfo.js';
 import { ENV_LOCAL } from '../../constants/env.js';
@@ -7,8 +8,13 @@ import { EventEmitter } from 'node:events';
 import { EVENT_LOG, EVENT_LOG_AS } from '../../constants/events.js';
 import LogTransform from './LogTransform.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const rootDir = path.resolve(__dirname, '..', '..', '..');
+
 class Logger {
-  constructor(logPath = path.join(process.rootDir, 'logs', 'app.log')) {
+  constructor(logPath = path.join(rootDir, 'logs', 'app.log')) {
     this.logPath = path.normalize(logPath);
     this.__emitter = new EventEmitter();
     this.__logTransform = new LogTransform();

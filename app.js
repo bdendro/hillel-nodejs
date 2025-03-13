@@ -1,12 +1,12 @@
 import express from 'express';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import './src/models/index.js';
 import Logger from './src/utils/logger/Logger.js';
 import router from './src/routes/router.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-process.rootDir = __dirname;
 
 const logger = new Logger();
 const app = express();
@@ -33,4 +33,14 @@ app.listen(process.env.APP_PORT || 3000, () => {
     `Express server is listening on port ${process.env.APP_PORT}`,
     false
   );
+});
+
+process.on('SIGINT', async () => {
+  await sequelize.close();
+  process.exit(0);
+});
+
+process.on('SIGTERM', async () => {
+  await sequelize.close();
+  process.exit(0);
 });
